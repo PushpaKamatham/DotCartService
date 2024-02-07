@@ -1,25 +1,19 @@
-const { MongoClient, ServerApiVersion } = require('mongodb');
-const uri = "mongodb+srv://pushpalathak:DnWOOIXcq3ZeBdae@cluster0.ejk6nff.mongodb.net/?retryWrites=true&w=majority";
+const express = require('express');
+const connectDB = require('./db');
+const productRoutes = require('./routes/products');
 
-// Create a MongoClient with a MongoClientOptions object to set the Stable API version
-const client = new MongoClient(uri, {
-    serverApi: {
-        version: ServerApiVersion.v1,
-        strict: true,
-        deprecationErrors: true,
-    }
+const app = express();
+const PORT = process.env.PORT || 3000;
+
+// Load environment variables
+require('dotenv').config();
+
+// Connect to MongoDB
+connectDB();
+
+// Routes
+app.use('/products', productRoutes);
+
+app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
 });
-
-async function run() {
-    try {
-        // Connect the client to the server	(optional starting in v4.7)
-        await client.connect();
-        // Send a ping to confirm a successful connection
-        await client.db("DotCart").command({ ping: 1 });
-        console.log("Pinged your deployment. You successfully connected to MongoDB!");
-    } finally {
-        // Ensures that the client will close when you finish/error
-        await client.close();
-    }
-}
-run().catch(console.dir);
